@@ -1,4 +1,21 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 24eb0bb89ba29137eeb558537f990e0166d6b32a
+<html>
+    <head>
+        <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    </head>
+    <body style="margin : 0px; overflow: hidden;">
+        <a-scene embedded arjs>
+            <a-marker preset="hiro">
+                <a-box material="opacity: 0.5; transparent: true;" 
+                    animation="property: rotation; by: 0 360 0; loop: true; dur: 4000; easing: linear" 
+                    color="#4CC3D9"></a-box>
+            </a-marker>
+            <a-entity camera>
+                <a-entity cursor="fuse: true; fuseTimeout: 500"
+                          position="0 0 -1"
+                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                          material="color: black; shader: flat">
+            </a-entity>
+        </a-scene>
+    </body>
+</html>
