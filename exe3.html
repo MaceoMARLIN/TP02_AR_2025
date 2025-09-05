@@ -5,10 +5,12 @@
         <script>
             AFRAME.registerComponent('click-change-color', {
                 init: function () {
-                    this.el.addEventListener('click', () => {
+                    const changeColor = () => {
                         const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
                         this.el.setAttribute('color', randomColor);
-                    });
+                    };
+                    this.el.addEventListener('click', changeColor);
+                    this.el.addEventListener('touchstart', changeColor);
                 }
             });
         </script>
