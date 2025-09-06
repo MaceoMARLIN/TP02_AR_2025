@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR.js + A-Frame — UI visible sur marker</title>
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <style>
+    .overlay {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      backdrop-filter: blur(4px);
+      display: none; /* caché par défaut */
+    }
+    .overlay label { font-size: 14px; display:block; margin-bottom: 6px; }
+    .overlay .row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+    .overlay input[type="range"] { width: 220px; }
+    .color-button {
+      width: 28px; height: 28px; border-radius:50%; border:2px solid #fff; cursor:pointer;
+    }
+    body { margin:0; overflow:hidden; }
+  </style>
+</head>
+<body>
+
+  <!-- UI Overlay -->
+  <div class="overlay" id="uiOverlay">
+    <label for="sizeSlider">Taille de la boîte (0.1 → 3.0) :</label>
+    <div class="row">
+      <input id="sizeSlider" type="range" min="0.1" max="3.0" step="0.01" value="1.0" />
+      <span id="sizeValue">1.00</span>
+    </div>
+
+    <label>Couleur :</label>
+    <div class="row">
+      <div class="color-button" style="background:red;" data-color="#FF0000"></div>
+      <div class="color-button" style="background:green;" data-color="#00FF00"></div>
+      <div class="color-button" style="background:blue;" data-color="#0000FF"></div>
+    </div>
+  </div>
+
+  <!-- Scène AR -->
+  <a-scene embedded arjs>
+    <a-marker preset="hiro" id="hiroMarker">
+      <a-box id="box"
+             color="#4CC3D9"
+             material="opacity:0.5; transparent:true;"
+             position="0 0.5 0"
+             scale="1 1 1"
+             animation="property: rotation; by: 0 360 0; loop: true; dur: 4000; easing: linear">
+      </a-box>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    const slider = document.getElementById('sizeSlider');
+    const valueEl = document.getElementById('sizeValue');
+    const box = document.getElementById('box');
+    const overlay = document.getElementById('uiOverlay');
+
+    function clamp(v, min, max){ return Math.min(max, Math.max(min, v)); }
+
+    function updateScale(v) {
+      const s = clamp(parseFloat(v), 0.1, 3.0);
+      valueEl.textContent = s.toFixed(2);
+      if (box) box.setAttribute('scale', `${s} ${s} ${s}`);
+    }
+
+    slider.addEventListener('input', (e) => updateScale(e.target.value), { passive: true });
+    updateScale(slider.value);
+
+    // Palette de couleurs
+    const colorButtons = document.querySelectorAll('.color-button');
+    colorButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const color = btn.getAttribute('data-color');
+        if (box) box.setAttribute('color', color);
+      });
+    });
+
+    // Affichage de l'UI seulement quand le marker Hiro est visible
+    const hiroMarker = document.getElementById('hiroMarker');
+    hiroMarker.addEventListener('markerFound', () => {
+      overlay.style.display = 'block';
+    });
+    hiroMarker.addEventListener('markerLost', () => {
+      overlay.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
